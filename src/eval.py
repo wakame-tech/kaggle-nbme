@@ -90,7 +90,7 @@ def get_location_predictions(
         start_idx = None
         end_idx = None
         current_preds: List[Tuple[int, int]] = []
-        print(pred, offsets, seq_ids)
+        # print(pred, offsets, seq_ids)
         for pred, offset, seq_id in zip(pred, offsets, seq_ids):
             if seq_id is None or seq_id == 0:
                 continue

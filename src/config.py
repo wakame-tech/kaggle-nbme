@@ -22,6 +22,6 @@ class Config:
     # device: 'cpu' or 'cuda'
     device: str = 'cuda'
     # epochs
-    epochs: int = 5
+    epochs: int = 20
     # debug?
     debug: bool = True

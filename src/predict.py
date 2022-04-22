@@ -5,6 +5,9 @@ from model import QAModel
 
 
 def predict(config: Config):
+    """
+    TODO: dump submission.csv 
+    """
     model_path = 'model.pth'
     model = QAModel(config)
     model.load_state_dict(torch.load(

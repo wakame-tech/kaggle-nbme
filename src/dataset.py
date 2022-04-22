@@ -59,7 +59,7 @@ def make_dataset(config: Config) -> pd.DataFrame:
 
     print(train.head())
     if config.debug:
-        return train.iloc[:10, :]
+        return train.iloc[:300, :]
     else:
         return train
 
