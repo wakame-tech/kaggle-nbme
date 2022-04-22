@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 
 def tokenize_and_add_labels(
     tokenizer: AutoTokenizer,
-    data: pd.DataFrame,
+    data: pd.Series,
     config: Config,
 ) -> pd.DataFrame:
     out = tokenizer(
@@ -43,18 +43,27 @@ def tokenize_and_add_labels(
     return out
 
 
+def make_test_dataset(config: Config) -> pd.DataFrame:
+    features = pd.read_csv(config.features_path)
+    patient_notes = pd.read_csv(config.patient_notes_path)
+    test = pd.read_csv(config.test_path)
+
+    test = pd.merge(test, patient_notes, on="pn_num")
+    test = pd.merge(test, features, on="feature_num")
+    test = test[["id", "pn_history", "feature_text"]]
+    return test
+
+
 def make_dataset(config: Config) -> pd.DataFrame:
     features = pd.read_csv(config.features_path)
     patient_notes = pd.read_csv(config.patient_notes_path)
     train = pd.read_csv(config.train_path)
-    # test = pd.read_csv(config.test_path)
 
     train = pd.merge(train, patient_notes, on="pn_num")
     train = pd.merge(train, features, on="feature_num")
     train['location'] = train['location'].apply(parse_location)
     train = train[["id", "pn_history",
                    "feature_text", "annotation", 'location']]
-
     train['feature_text'] = train['feature_text'].apply(preprocess_question)
 
     print(train.head())
