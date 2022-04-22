@@ -1,4 +1,4 @@
 
-def preprocess(text: str) -> str:
+def preprocess_question(text: str) -> str:
     # TODO
-    return text
+    return text.replace("-OR-", "; ").replace("-", " ")

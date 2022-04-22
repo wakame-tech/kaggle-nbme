@@ -12,3 +12,9 @@ class Config:
     train_path: Path = Path("dataset/train.csv")
     # id, case_num, pn_num, feature_num, annotation, location
     test_path: Path = Path("dataset/test.csv")
+    # model
+    model: str = 'bert-base-uncased'
+    # token size
+    token_size: int = 416
+    # batch size (default: 8)
+    batch_size: int = 8
