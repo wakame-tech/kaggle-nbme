@@ -46,3 +46,6 @@ span: 0..0
 question: what Family-history-of-MI-OR-Family-history-of-myocardial-infarction?
 answer:
 ```
+
+## 2022/04/22
+<https://www.kaggle.com/code/bearmontblanc/nbme-pytorch-bert/notebook> の方のnotebookを参考にしてみる

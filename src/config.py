@@ -18,3 +18,5 @@ class Config:
     token_size: int = 416
     # batch size (default: 8)
     batch_size: int = 8
+    # device: 'cpu' or 'cuda'
+    device: str = 'cpu'

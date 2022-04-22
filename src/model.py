@@ -7,7 +7,8 @@ class QAModel(nn.Module):
     def __init__(self, config: Config):
         super().__init__()
         self.bert = AutoModel.from_pretrained(config.model)
-        self.dropout = nn.Dropout(p=0.5)
+        dropout = 0.2
+        self.dropout = nn.Dropout(p=dropout)
         self.config = config
         self.fc1 = nn.Linear(768, 512)
         self.fc2 = nn.Linear(512, 512)

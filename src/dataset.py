@@ -29,7 +29,7 @@ def tokenize_and_add_labels(
             continue
 
         token_start, token_end = offsets
-        for feature_start, feature_end in out["location_int"]:
+        for feature_start, feature_end in data["location"]:
             if token_start >= feature_start and token_end <= feature_end:
                 labels[idx] = 1.0
                 break
