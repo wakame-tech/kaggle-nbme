@@ -1,6 +1,16 @@
 # kaggle NBME
 - competition URL: <https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes/overview>
 
+## Get Started
+```bash
+cd dataset
+kaggle competitions download -c nbme-score-clinical-patient-notes
+unzip nbme-score-clinical-patient-notes
+cd -
+pip install -r requirements.txt
+python src/main.py
+```
+
 # 2022/04/21
 `bert-large-uncased-whole-word-masking-finetuned-squad` 使用.
 `context`, `question` 前処理なし

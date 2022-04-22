@@ -15,11 +15,16 @@ def tokenize_and_add_labels(
     out = tokenizer(
         data["feature_text"],
         data["pn_history"],
+        # 文の2番目の切り捨てを行う
         truncation="only_second",
         max_length=config.token_size,
+        # 最大長でpaddingする
         padding='max_length',
+        return_token_type_ids=True,
         return_offsets_mapping=True
     )
+    # input_ids: トークンIDのリスト
+    # token_type_ids: 文の種類を表すマスク(0, 1)
     labels = [0.0] * len(out["input_ids"])
     out["sequence_ids"] = out.sequence_ids()
 
@@ -53,7 +58,10 @@ def make_dataset(config: Config) -> pd.DataFrame:
     train['feature_text'] = train['feature_text'].apply(preprocess_question)
 
     print(train.head())
-    return train
+    if config.debug:
+        return train.iloc[:10, :]
+    else:
+        return train
 
 
 class QADataset(Dataset):
