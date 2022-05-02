@@ -62,7 +62,8 @@ def eval_model(
     seq_ids = np.concatenate(seq_ids, axis=0)
     valid_labels = np.concatenate(valid_labels, axis=0)
 
-    location_preds = get_location_predictions(preds, offsets, seq_ids)
+    location_preds = get_location_predictions(
+        preds, offsets, seq_ids, config.span_thres)
     score = calculate_char_cv(location_preds, offsets, seq_ids, valid_labels)
 
     return sum(valid_loss)/len(valid_loss), score
@@ -77,12 +78,12 @@ def get_location_predictions(
     # TensorType['test_size', 'token_size']
     # question: 0, context: 1, otherwize: nan
     sequence_ids,
+    thres: float = 0.5,
 ) -> List[List[Tuple[int, int]]]:
     """
-    preds -> list of spans
+    preds -> spans: List['test_size', 'span_count']
     """
     all_spans: List[List[Tuple[int, int]]] = []
-    thres: float = 0.5
     for pred, offsets, seq_ids in zip(preds, offset_mapping, sequence_ids):
         # logitsからprobabilityを計算
         pred = 1 / (1 + np.exp(-pred))
@@ -91,18 +92,18 @@ def get_location_predictions(
         end_idx = None
         current_preds: List[Tuple[int, int]] = []
         # print(pred, offsets, seq_ids)
-        for pred, offset, seq_id in zip(pred, offsets, seq_ids):
+        for pr, offset, seq_id in zip(pred, offsets, seq_ids):
             if seq_id is None or seq_id == 0:
                 continue
 
-            if pred > thres:
+            if pr > thres:
                 if start_idx is None:
                     start_idx = offset[0]
                 end_idx = offset[1]
             elif start_idx is not None:
                 current_preds.append((start_idx, end_idx))
                 start_idx = None
-            all_spans.append(current_preds)
+        all_spans.append(current_preds)
 
     return all_spans
 

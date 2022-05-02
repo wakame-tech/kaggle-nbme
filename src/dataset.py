@@ -29,7 +29,8 @@ def tokenize_and_add_labels(
     out["sequence_ids"] = out.sequence_ids()
 
     for idx, (seq_id, offsets) in enumerate(zip(out["sequence_ids"], out["offset_mapping"])):
-        if not seq_id or seq_id == 0:
+        is_test_data = 'location' not in data.index
+        if not seq_id or seq_id == 0 or is_test_data:
             labels[idx] = -1
             continue
 
@@ -57,14 +58,10 @@ def join_dfs(df, features, patient_notes):
 
 def make_test_dataset(config: Config) -> pd.DataFrame:
     features = pd.read_csv(config.features_path)
-    print(features.columns)
     patient_notes = pd.read_csv(config.patient_notes_path)
-    print(patient_notes.columns)
     test = pd.read_csv(config.test_path)
 
     test = join_dfs(test, features, patient_notes)
-    print(test.head())
-    print(test.columns)
     test = test[["id", "pn_history", "feature_text"]]
     return test
 

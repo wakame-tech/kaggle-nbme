@@ -12,6 +12,8 @@ class Config:
     train_path: Path = Path("dataset/train.csv")
     # id, case_num, pn_num, feature_num, annotation, location
     test_path: Path = Path("dataset/test.csv")
+    # id, location
+    submission_path: Path = Path("dataset/submission.csv")
     # model
     model: str = 'bert-base-uncased'
     # model: str = 'deepset/roberta-base-squad2'
@@ -22,6 +24,8 @@ class Config:
     # device: 'cpu' or 'cuda'
     # device: str = 'cuda'
     device: str = 'cpu'
+    # span thres
+    span_thres: float = 0.5
     # epochs
     epochs: int = 1
     # debug?

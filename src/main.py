@@ -1,8 +1,8 @@
 from config import Config
 from train import train
-from predict import predict
+from test import test
 
 if __name__ == "__main__":
     config = Config()
     # train(config)
-    predict(config)
+    test(config)
