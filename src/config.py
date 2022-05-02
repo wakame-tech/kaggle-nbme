@@ -20,8 +20,9 @@ class Config:
     # batch size (default: 8)
     batch_size: int = 16
     # device: 'cpu' or 'cuda'
-    device: str = 'cuda'
+    # device: str = 'cuda'
+    device: str = 'cpu'
     # epochs
-    epochs: int = 20
+    epochs: int = 1
     # debug?
     debug: bool = True

@@ -11,6 +11,12 @@ def predict(config: Config):
     """
     TODO: dump submission.csv 
     """
+    test = make_test_dataset(config)
+    print(test.head())
+    data = test.iloc[0]
+
+    return
+
     model_path = 'model.pth'
     model = QAModel(config)
     model.load_state_dict(torch.load(
@@ -20,10 +26,6 @@ def predict(config: Config):
     model.eval()
 
     tokenizer = AutoTokenizer.from_pretrained(config.model)
-
-    test = make_test_dataset(config)
-    data = test.iloc[0]
-
     tokens = tokenizer(
         data["feature_text"],
         data["pn_history"],

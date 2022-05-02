@@ -43,13 +43,28 @@ def tokenize_and_add_labels(
     return out
 
 
+def loopup(df, ref_df, key_label: str, value_label: str) -> pd.DataFrame:
+    df[value_label] = df.merge(
+        ref_df[[key_label, value_label]], on=key_label, how='right')[value_label]
+    return df
+
+
+def join_dfs(df, features, patient_notes):
+    df = loopup(df, features, 'feature_num', 'feature_text')
+    df = loopup(df, patient_notes, 'pn_num', 'pn_history')
+    return df
+
+
 def make_test_dataset(config: Config) -> pd.DataFrame:
     features = pd.read_csv(config.features_path)
+    print(features.columns)
     patient_notes = pd.read_csv(config.patient_notes_path)
+    print(patient_notes.columns)
     test = pd.read_csv(config.test_path)
 
-    test = pd.merge(test, patient_notes, on="pn_num")
-    test = pd.merge(test, features, on="feature_num")
+    test = join_dfs(test, features, patient_notes)
+    print(test.head())
+    print(test.columns)
     test = test[["id", "pn_history", "feature_text"]]
     return test
 
@@ -59,8 +74,7 @@ def make_dataset(config: Config) -> pd.DataFrame:
     patient_notes = pd.read_csv(config.patient_notes_path)
     train = pd.read_csv(config.train_path)
 
-    train = pd.merge(train, patient_notes, on="pn_num")
-    train = pd.merge(train, features, on="feature_num")
+    train = join_dfs(train, features, patient_notes)
     train['location'] = train['location'].apply(parse_location)
     train = train[["id", "pn_history",
                    "feature_text", "annotation", 'location']]
@@ -68,7 +82,7 @@ def make_dataset(config: Config) -> pd.DataFrame:
 
     print(train.head())
     if config.debug:
-        return train.iloc[:300, :]
+        return train.iloc[:10, :]
     else:
         return train
 
