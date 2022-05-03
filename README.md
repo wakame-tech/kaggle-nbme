@@ -58,4 +58,11 @@ answer:
 ```
 
 ## 2022/04/22
-<https://www.kaggle.com/code/bearmontblanc/nbme-pytorch-bert/notebook> の方のnotebookを参考にしてみる
+- <https://www.kaggle.com/code/bearmontblanc/nbme-pytorch-bert/notebook> の方のnotebookを参考にしてみる
+
+## 2022/05/02
+- `predict` 作った
+
+## 2022/05/03
+- `tensorboard` 対応
+- モデルをDeBERTaに

@@ -1,14 +1,16 @@
-from torch.utils.data import DataLoader
-from model import QAModel
-from config import Config
-import torch
-import numpy as np
-from sklearn.metrics import precision_recall_fscore_support, accuracy_score
+from dataclasses import dataclass
 from itertools import chain
 from typing import List, Tuple
-from tqdm import tqdm
+
+import numpy as np
+import torch
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from torch.utils.data import DataLoader
 from torchtyping import TensorType
-from dataclasses import dataclass
+from tqdm import tqdm
+
+from config import Config
+from model import QAModel
 
 
 @dataclass
@@ -20,11 +22,13 @@ class Metrics:
 
 
 def eval_model(
+    epoch: int,
     config: Config,
     model: QAModel,
     dataloader: DataLoader,
-    criterion
-) -> Tuple[float, Metrics]:
+    criterion,
+    writer,
+):
     """
     how to evaluation
     https://www.kaggle.com/c/nbme-score-clinical-patient-notes/overview/evaluation
@@ -38,19 +42,29 @@ def eval_model(
     seq_ids = []
     valid_labels = []
 
-    for batch in tqdm(dataloader):
-        input_ids, attention_mask, token_type_ids, labels, offset_mapping, sequence_ids = batch
+    for i, batch in enumerate(tqdm(dataloader)):
+        (
+            input_ids,
+            attention_mask,
+            token_type_ids,
+            labels,
+            offset_mapping,
+            sequence_ids,
+        ) = batch
         input_ids = input_ids.to(DEVICE)
         attention_mask = attention_mask.to(DEVICE)
         token_type_ids = token_type_ids.to(DEVICE)
         labels = labels.to(DEVICE)
 
-        logits: TensorType['batch_size', 'token_size'] \
-            = model(input_ids, attention_mask, token_type_ids)
+        logits: TensorType["batch_size", "token_size"] = model(
+            input_ids, attention_mask, token_type_ids
+        )
 
         loss = criterion(logits, labels)
         loss = torch.masked_select(loss, labels > -1.0).mean()
-        valid_loss.append(loss.item() * input_ids.size(0))
+
+        valid_loss = loss.item() * input_ids.size(0)
+        writer.add_scalar("valid/loss", valid_loss, epoch * len(dataloader) + i)
 
         preds.append(logits.detach().cpu().numpy())
         offsets.append(offset_mapping.numpy())
@@ -63,10 +77,10 @@ def eval_model(
     valid_labels = np.concatenate(valid_labels, axis=0)
 
     location_preds = get_location_predictions(
-        preds, offsets, seq_ids, config.span_thres)
+        preds, offsets, seq_ids, config.span_thres
+    )
     score = calculate_char_cv(location_preds, offsets, seq_ids, valid_labels)
-
-    return sum(valid_loss)/len(valid_loss), score
+    return score
 
 
 def get_location_predictions(
@@ -122,7 +136,9 @@ def calculate_char_cv(
     """
     all_labels = []
     all_preds = []
-    for preds, offsets, seq_ids, labels in zip(predictions, offset_mapping, sequence_ids, labels):
+    for preds, offsets, seq_ids, labels in zip(
+        predictions, offset_mapping, sequence_ids, labels
+    ):
         num_chars = max(list(chain(*offsets)))
         char_labels = np.zeros(num_chars)
 
@@ -131,7 +147,7 @@ def calculate_char_cv(
             if s_id is None or s_id == 0:
                 continue
             if int(label) == 1:
-                char_labels[o[0]:o[1]] = 1
+                char_labels[o[0] : o[1]] = 1
 
         char_preds = np.zeros(num_chars)
 
@@ -143,7 +159,8 @@ def calculate_char_cv(
         all_preds.extend(char_preds)
 
     precision, recall, f1, _ = precision_recall_fscore_support(
-        all_labels, all_preds, average="binary", labels=np.unique(all_preds))
+        all_labels, all_preds, average="binary", labels=np.unique(all_preds)
+    )
     accuracy: float = accuracy_score(all_labels, all_preds)
 
     return Metrics(accuracy, precision, recall, f1)

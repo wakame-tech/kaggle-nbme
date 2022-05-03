@@ -1,10 +1,11 @@
 import torch.nn as nn
-from transformers import AutoModel
-from config import Config
 from torchtyping import TensorType, patch_typeguard
+from transformers import AutoModel
 from typeguard import typechecked
 
-patch_typeguard()
+from config import Config
+
+# patch_typeguard()
 
 
 class QAModel(nn.Module):
@@ -27,9 +28,9 @@ class QAModel(nn.Module):
         token_type_ids: TensorType['batch', 'token_size']
     ) -> TensorType['batch', 'token_size']:
         outputs = self.bert(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            token_type_ids=token_type_ids
+            input_ids,
+            attention_mask,
+            token_type_ids,
         )
         hidden: TensorType['batch', 'token_size', 'hidden_size'] \
             = outputs.last_hidden_state
