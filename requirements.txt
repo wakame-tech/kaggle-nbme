@@ -5,3 +5,4 @@ scikit-learn
 torchtyping
 typeguard
 matplotlib
+setuptools==59.5.0

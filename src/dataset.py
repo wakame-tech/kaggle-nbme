@@ -1,10 +1,10 @@
-from transformers import AutoTokenizer
-from helper import parse_location
-from config import Config
-from preprocess import preprocess_question
-import pandas as pd
 import numpy as np
+import pandas as pd
 from torch.utils.data import Dataset
+from transformers import AutoTokenizer
+
+from config import Config
+from helper import parse_location
 
 
 def tokenize_and_add_labels(
@@ -75,11 +75,9 @@ def make_dataset(config: Config) -> pd.DataFrame:
     train['location'] = train['location'].apply(parse_location)
     train = train[["id", "pn_history",
                    "feature_text", "annotation", 'location']]
-    train['feature_text'] = train['feature_text'].apply(preprocess_question)
 
-    print(train.head())
     if config.debug:
-        return train.iloc[:10, :]
+        return pd.DataFrame(train.sample(n = 1000))
     else:
         return train
 

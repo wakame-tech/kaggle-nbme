@@ -15,18 +15,18 @@ class Config:
     # id, location
     submission_path: Path = Path("dataset/submission.csv")
     # model
-    model: str = 'bert-base-uncased'
-    # model: str = 'deepset/roberta-base-squad2'
+    # model: str = "bert-base-uncased"
+    model: str = 'microsoft/deberta-base'
     # token size
-    token_size: int = 416
+    token_size: int = 128 # 416
     # batch size (default: 8)
-    batch_size: int = 16
+    batch_size: int = 8
     # device: 'cpu' or 'cuda'
-    # device: str = 'cuda'
-    device: str = 'cpu'
+    device: str = "cuda"
+    # device: str = 'cpu'
     # span thres
-    span_thres: float = 0.5
+    span_thres: float = 0.4
     # epochs
-    epochs: int = 1
+    epochs: int = 10
     # debug?
     debug: bool = True
